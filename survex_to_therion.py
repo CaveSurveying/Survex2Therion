@@ -48,8 +48,8 @@ def ExistingFile(Name):
 def Convert(SvxList):
     if re.search(r'\;',SvxList) != None:
          SvxList = re.sub(r'\;','#',SvxList)
-    if re.search(r'^\*',SvxList) != None:
-        CavernCommand = re.search(r'(^\*)(\w+)(.*)',SvxList)
+    if re.search(r'^\s*\*',SvxList) != None:
+        CavernCommand = re.search(r'(^\s*\*)(\w+)(.*)',SvxList)
         #A lst of commands that do not get the text lowercased, along with begin and end
         ComList = ['team', 'instuments', 'copyright']
         CavCom = CavernCommand.group(2).lower()
