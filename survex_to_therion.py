@@ -118,6 +118,8 @@ def TherionHeaders(SvxName):
 def process_directory(directory):
     global i
     for FullName in os.listdir(directory):
+        if FullName.startswith('.'):
+            continue  # Skip files and directories starting with a dot
         if svx.search(FullName) is not None:
             i += 1
             print("File number ===================================", i)
@@ -140,6 +142,6 @@ if args.no_recurse:
     process_directory('.')
 else:
     for root, dirs, files in os.walk('.'):
-        if '.svn' in dirs:
-            dirs.remove('.svn')
+        # Exclude directories starting with a dot
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
         process_directory(root)
