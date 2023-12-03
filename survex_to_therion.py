@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
 ##
 ## Copyright (C) 2011-2019 Andrew Atkinson
@@ -18,80 +18,76 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##-------------------------------------------------------------------
 
-import os, re
-#from Tkinter import *
-#import tkFileDialog
-
+import os
+import re
 from os.path import join
-
 from datetime import datetime
 
 def OverWriteFile():
-    print ("click!")
+    print("click!")
 
 def RenameFile():
-    print ("click2!")
-    print FullPathName
-    file_path = tkFileDialog.asksaveasfilename(title="New file",defaultextension=".th", filetypes=[("th file",".th"),("All files",".*")])# filename = tk.filedialog.askopenfilename()
-    print file_path
+    print("click2!")
+    print(FullPathName)
+    file_path = tkFileDialog.asksaveasfilename(title="New file", defaultextension=".th", filetypes=[("th file", ".th"), ("All files", ".*")])
+    print(file_path)
 
 def ExistingFile(Name):
     master = Tk()
     master.title("Existing File")
-    Label(text="File already exists!\n\n"+Name+"\n\nWhat do you want to do with the file?").pack(padx=50, pady=10)
+    Label(text="File already exists!\n\n" + Name + "\n\nWhat do you want to do with the file?").pack(padx=50, pady=10)
     SameName = Button(master, text="Over Write!", command=OverWriteFile)
-    SameName.pack(side=LEFT,padx=50, pady=10)
+    SameName.pack(side=LEFT, padx=50, pady=10)
     ReName = Button(master, text="Rename", command=RenameFile)
     ReName.pack(side=RIGHT, padx=50, pady=10)
     mainloop()
     return Name
 
 def Convert(SvxList):
-    if re.search(r'\;',SvxList) != None:
-         SvxList = re.sub(r'\;','#',SvxList)
-    if re.search(r'^\s*\*',SvxList) != None:
-        CavernCommand = re.search(r'^(\s*)\*(\w+)(.*)',SvxList)
-        #A lst of commands that do not get the text lowercased, along with begin and end
-        ComList = ['team', 'instuments', 'copyright']
+    if re.search(r'\;', SvxList) is not None:
+        SvxList = re.sub(r'\;', '#', SvxList)
+    if re.search(r'^\s*\*', SvxList) is not None:
+        CavernCommand = re.search(r'^(\s*)\*(\w+)(.*)', SvxList)
+        ComList = ['team', 'instruments', 'copyright']
         CavCom = CavernCommand.group(2).lower()
         if CavCom == "begin":
-            ThList = CavernCommand.group(1) +"survey"+ CavernCommand.group(3) +"\ncentreline\n"
+            ThList = CavernCommand.group(1) + "survey" + CavernCommand.group(3) + "\ncentreline\n"
         elif CavCom == "end":
-            ThList = CavernCommand.group(1) +"endcentreline\nendsurvey\n"
+            ThList = CavernCommand.group(1) + "endcentreline\nendsurvey\n"
         elif CavCom == "include":
-            TempList = CavernCommand.group(1) +"input"+CavernCommand.group(3)+"\n"
-            TempList = re.sub(r'\.svx','.th',TempList)
+            TempList = CavernCommand.group(1) + "input" + CavernCommand.group(3) + "\n"
+            TempList = re.sub(r'\.svx', '.th', TempList)
             #change \ to /
-            ThList = re.sub(r'\\',r'/',TempList )
+            ThList = re.sub(r'\\', r'/', TempList)
         elif CavCom == "equate":
             EquateStn = str.split(CavernCommand.group(3))
-            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()
+            ThList = CavernCommand.group(1) + CavernCommand.group(2).lower()
             for stn in EquateStn:
-                print stn
-                if re.search(r'(\..+$)',stn) != None:
-                    thstn = re.search(r'(.+)\.(.+?$)',stn)
-                    Station = thstn.group(2)+"@"+thstn.group(1)
+                print(stn)
+                if re.search(r'(\..+$)', stn) is not None:
+                    thstn = re.search(r'(.+)\.(.+?$)', stn)
+                    Station = thstn.group(2) + "@" + thstn.group(1)
                 else:
                     Station = stn
-                ThList = ThList +" "+ Station
+                ThList = ThList + " " + Station
             ThList += "\n"
-            print ThList
+            print(ThList)
         elif ((CavCom == "require") or (CavCom == "export") or (CavCom == "ref")):
-            ThList = CavernCommand.group(1) + "# " + CavernCommand.group(2).lower() + CavernCommand.group(3)+"\n"
+            ThList = CavernCommand.group(1) + "# " + CavernCommand.group(2).lower() + CavernCommand.group(3) + "\n"
         elif CavCom in ComList:
-            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()+CavernCommand.group(3)+"\n"
+            ThList = CavernCommand.group(1) + CavernCommand.group(2).lower() + CavernCommand.group(3) + "\n"
         else:
-            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()+CavernCommand.group(3).lower()+"\n"
+            ThList = CavernCommand.group(1) + CavernCommand.group(2).lower() + CavernCommand.group(3).lower() + "\n"
     else:
         ThList = SvxList
     return ThList
 
 def ToTherion(SvxName, ThName):
-    File = open(SvxName,"U")
-    FileList = File.readlines()
+    with open(SvxName, "r") as File:
+        FileList = File.readlines()
     TherionList = TherionHeaders(SvxName) + [Convert(Line) for Line in FileList]
-    ThFile =open(ThName, "w")
-    ThFile.writelines(TherionList)
+    with open(ThName, "w") as ThFile:
+        ThFile.writelines(TherionList)
     return TherionList
 
 def TherionHeaders(SvxName):
@@ -106,9 +102,7 @@ def TherionHeaders(SvxName):
     except NameError:
         script_name = "survex_to_therion.py"
     ThHeaders.append("# by " + script_name + "\n")
-    # Get the current date and time
     now = datetime.now()
-    # Convert to ISO 8601 format
     iso_format = now.isoformat()
     ThHeaders.append("# at " + iso_format + "\n")
     ThHeaders.append("#\n")
@@ -116,26 +110,17 @@ def TherionHeaders(SvxName):
     return ThHeaders
 
 svx = re.compile(r'\.svx', re.IGNORECASE)
-i=1
+i = 1
 for root, dirs, files in os.walk('.'):
     if '.svn' in dirs:
-        dirs.remove('.svn')  # don't visit svn directories
+        dirs.remove('.svn')
     for FullName in files:
-
-        if svx.search(FullName) != None:
-            i=i+1
-            print "File number ===================================",  i
-            print FullName
+        if svx.search(FullName) is not None:
+            i += 1
+            print("File number ===================================", i)
+            print(FullName)
             FullPathName = join(root, FullName)
             BaseName = svx.split(FullName)
             FullName = BaseName[0] + ".th"
             FullPathNameth = join(root, FullName)
-            #Check to see if .th file (or directory!) already exits
-            #if os.path.exists(FullPathNameth) == 1:
-            #    FullPathNameth = ExistingFile(FullPathNameth)
             ToTherion(FullPathName, FullPathNameth)
-
-
-
-
-
