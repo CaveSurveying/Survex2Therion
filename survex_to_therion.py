@@ -18,10 +18,12 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##-------------------------------------------------------------------
 
+import argparse
 import os
 import re
-from os.path import join
+
 from datetime import datetime
+from os.path import join
 
 def OverWriteFile():
     print("click!")
@@ -109,18 +111,31 @@ def TherionHeaders(SvxName):
     ThHeaders.append("\n")
     return ThHeaders
 
-svx = re.compile(r'\.svx', re.IGNORECASE)
-i = 1
-for root, dirs, files in os.walk('.'):
-    if '.svn' in dirs:
-        dirs.remove('.svn')
-    for FullName in files:
+def process_directory(directory):
+    global i
+    for FullName in os.listdir(directory):
         if svx.search(FullName) is not None:
             i += 1
             print("File number ===================================", i)
             print(FullName)
-            FullPathName = join(root, FullName)
+            FullPathName = join(directory, FullName)
             BaseName = svx.split(FullName)
             FullName = BaseName[0] + ".th"
-            FullPathNameth = join(root, FullName)
+            FullPathNameth = join(directory, FullName)
             ToTherion(FullPathName, FullPathNameth)
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--no-recurse', action='store_true', help='Process files only in the current directory')
+args = parser.parse_args()
+
+svx = re.compile(r'\.svx', re.IGNORECASE)
+i = 1
+
+if args.no_recurse:
+    process_directory('.')
+else:
+    for root, dirs, files in os.walk('.'):
+        if '.svn' in dirs:
+            dirs.remove('.svn')
+        process_directory(root)
