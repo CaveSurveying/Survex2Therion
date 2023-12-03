@@ -56,7 +56,7 @@ def Convert(SvxList):
         if CavCom == "begin":
             ThList = "survey"+ CavernCommand.group(3) +"\ncentreline\n"
         elif CavCom == "end":
-            ThList = "endcentreline\nendsurvey"
+            ThList = "endcentreline\nendsurvey\n"
         elif CavCom == "include":
             TempList = "input"+CavernCommand.group(3)+"\n"
             TempList = re.sub(r'\.svx','.th',TempList)
