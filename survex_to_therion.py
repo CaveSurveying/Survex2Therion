@@ -49,22 +49,22 @@ def Convert(SvxList):
     if re.search(r'\;',SvxList) != None:
          SvxList = re.sub(r'\;','#',SvxList)
     if re.search(r'^\s*\*',SvxList) != None:
-        CavernCommand = re.search(r'(^\s*\*)(\w+)(.*)',SvxList)
+        CavernCommand = re.search(r'^(\s*)\*(\w+)(.*)',SvxList)
         #A lst of commands that do not get the text lowercased, along with begin and end
         ComList = ['team', 'instuments', 'copyright']
         CavCom = CavernCommand.group(2).lower()
         if CavCom == "begin":
-            ThList = "survey"+ CavernCommand.group(3) +"\ncentreline\n"
+            ThList = CavernCommand.group(1) +"survey"+ CavernCommand.group(3) +"\ncentreline\n"
         elif CavCom == "end":
-            ThList = "endcentreline\nendsurvey\n"
+            ThList = CavernCommand.group(1) +"endcentreline\nendsurvey\n"
         elif CavCom == "include":
-            TempList = "input"+CavernCommand.group(3)+"\n"
+            TempList = CavernCommand.group(1) +"input"+CavernCommand.group(3)+"\n"
             TempList = re.sub(r'\.svx','.th',TempList)
             #change \ to /
             ThList = re.sub(r'\\',r'/',TempList )
         elif CavCom == "equate":
             EquateStn = str.split(CavernCommand.group(3))
-            ThList = CavernCommand.group(2).lower()
+            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()
             for stn in EquateStn:
                 print stn
                 if re.search(r'(\..+$)',stn) != None:
@@ -76,9 +76,9 @@ def Convert(SvxList):
             ThList += "\n"
             print ThList
         elif CavCom in ComList:
-            ThList = CavernCommand.group(2).lower()+CavernCommand.group(3)+"\n"
+            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()+CavernCommand.group(3)+"\n"
         else:
-            ThList = CavernCommand.group(2).lower()+CavernCommand.group(3).lower()+"\n"
+            ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()+CavernCommand.group(3).lower()+"\n"
     else:
         ThList = SvxList
     return ThList
