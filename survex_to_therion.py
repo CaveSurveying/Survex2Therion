@@ -68,7 +68,11 @@ def Convert(SvxList):
                 print(stn)
                 if re.search(r'(\..+$)', stn) is not None:
                     thstn = re.search(r'(.+)\.(.+?$)', stn)
-                    Station = thstn.group(2) + "@" + thstn.group(1)
+                    # Split by dots, reverse, and rejoin
+                    location_parts = thstn.group(1).split('.')
+                    location_parts.reverse()
+                    reversed_location = '.'.join(location_parts)
+                    Station = thstn.group(2) + "@" + reversed_location
                 else:
                     Station = stn
                 ThList = ThList + " " + Station
