@@ -75,6 +75,8 @@ def Convert(SvxList):
                 ThList = ThList +" "+ Station
             ThList += "\n"
             print ThList
+        elif ((CavCom == "require") or (CavCom == "export") or (CavCom == "ref")):
+            ThList = CavernCommand.group(1) + "# " + CavernCommand.group(2).lower() + CavernCommand.group(3)+"\n"
         elif CavCom in ComList:
             ThList = CavernCommand.group(1)+CavernCommand.group(2).lower()+CavernCommand.group(3)+"\n"
         else:
