@@ -24,6 +24,7 @@ import os, re
 
 from os.path import join
 
+from datetime import datetime
 
 def OverWriteFile():
     print ("click!")
@@ -88,11 +89,31 @@ def Convert(SvxList):
 def ToTherion(SvxName, ThName):
     File = open(SvxName,"U")
     FileList = File.readlines()
-    TherionList = [Convert(Line) for Line in FileList]
+    TherionList = TherionHeaders(SvxName) + [Convert(Line) for Line in FileList]
     ThFile =open(ThName, "w")
     ThFile.writelines(TherionList)
     return TherionList
 
+def TherionHeaders(SvxName):
+    ThHeaders = []
+    ThHeaders.append("encoding UTF-8\n")
+    ThHeaders.append("\n")
+    ThHeaders.append("#\n")
+    ThHeaders.append("# automatically created from " + SvxName + "\n")
+    try:
+        script_path = __file__
+        script_name = os.path.basename(script_path)
+    except NameError:
+        script_name = "survex_to_therion.py"
+    ThHeaders.append("# by " + script_name + "\n")
+    # Get the current date and time
+    now = datetime.now()
+    # Convert to ISO 8601 format
+    iso_format = now.isoformat()
+    ThHeaders.append("# at " + iso_format + "\n")
+    ThHeaders.append("#\n")
+    ThHeaders.append("\n")
+    return ThHeaders
 
 svx = re.compile(r'\.svx', re.IGNORECASE)
 i=1
