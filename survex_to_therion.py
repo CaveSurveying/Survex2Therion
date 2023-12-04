@@ -51,6 +51,7 @@ def Convert(SvxList):
     if re.search(r'^\s*\*', SvxList) is not None:
         CavernCommand = re.search(r'^(\s*)\*(\w+)(.*)', SvxList)
         ComList = ['team', 'instruments', 'copyright']
+        CommentList = ['case', 'export', 'ref', 'require', 'set']
         CavCom = CavernCommand.group(2).lower()
         if CavCom == "begin":
             ThList = CavernCommand.group(1) + "survey" + CavernCommand.group(3) + "\ncentreline\n"
@@ -78,8 +79,8 @@ def Convert(SvxList):
                 ThList = ThList + " " + Station
             ThList += "\n"
             print(ThList)
-        elif ((CavCom == "require") or (CavCom == "export") or (CavCom == "ref")):
-            ThList = CavernCommand.group(1) + "# " + CavernCommand.group(2).lower() + CavernCommand.group(3) + "\n"
+        elif CavCom in CommentList:
+            ThList = CavernCommand.group(1) + "# *" + CavernCommand.group(2) + CavernCommand.group(3) + "\n"
         elif CavCom in ComList:
             ThList = CavernCommand.group(1) + CavernCommand.group(2).lower() + CavernCommand.group(3) + "\n"
         else:
